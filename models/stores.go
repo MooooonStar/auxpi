@@ -38,7 +38,7 @@ func GetStores() (stores []Store) {
 		Find(&stores).
 		Error
 	if err != nil {
-		setCacheStores("all", &stores)
+		setCacheStores("all", stores)
 	}
 	modelsError(auxpi.ErrorToString(err))
 	return
@@ -54,7 +54,7 @@ func GetActiveStore() (stores []Store) {
 		Order("`rank` ASC").
 		Find(&stores).Error
 	if err == nil && len(stores) > 0 {
-		setCacheStores("active", &stores)
+		setCacheStores("active", stores)
 	}
 	modelsError(auxpi.ErrorToString(err))
 	return
@@ -99,8 +99,8 @@ func DisableStores(receive auxpi.MenuReceive) bool {
 		deleteCacheAllStores()
 		as := GetStores()
 		ats := GetActiveStore()
-		setCacheStores("active", &ats)
-		setCacheStores("all", &as)
+		setCacheStores("active", ats)
+		setCacheStores("all", as)
 	}
 	return modelsError(auxpi.ErrorToString(err))
 }
@@ -119,8 +119,8 @@ func EnableStores(receive auxpi.MenuReceive) bool {
 		deleteCacheAllStores()
 		as := GetStores()
 		ats := GetActiveStore()
-		setCacheStores("active", &ats)
-		setCacheStores("all", &as)
+		setCacheStores("active", ats)
+		setCacheStores("all", as)
 	}
 	return modelsError(auxpi.ErrorToString(err))
 }
@@ -144,8 +144,8 @@ func UpdateStore(store Store) bool {
 		deleteCacheAllStores()
 		as := GetStores()
 		ats := GetActiveStore()
-		setCacheStores("active", &ats)
-		setCacheStores("all", &as)
+		setCacheStores("active", ats)
+		setCacheStores("all", as)
 	}
 	return modelsError(auxpi.ErrorToString(err))
 }
@@ -162,7 +162,9 @@ func getCacheStores(key string, single bool) ([]Store, bool) {
 	return list, false
 }
 
-func setCacheStores(key string, value *[]Store) bool {
+// 1. Use pointer is useless here.
+// 2. It's not matched with 'list, _ = s.([]Store)'
+func setCacheStores(key string, value []Store) bool {
 	err := bootstrap.Cache.Put("store_"+key, value, 3600*time.Second)
 	return modelsError(auxpi.ErrorToString(err))
 }
