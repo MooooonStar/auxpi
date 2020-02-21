@@ -32,6 +32,7 @@ func (i *PagesController) commonStyle() {
 	err := site.UnmarshalJSON([]byte(models.GetOption("site_base", "conf")))
 	if err != nil {
 		auxpiLog.SetAWarningLog("CONTROLLER", err)
+		return
 	}
 
 	Stores := models.GetActiveStore()

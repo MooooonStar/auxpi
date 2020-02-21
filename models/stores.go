@@ -1,7 +1,9 @@
 package models
 
 import (
-	"github.com/auxpi/auxpiAll"
+	"time"
+
+	auxpi "github.com/auxpi/auxpiAll"
 	"github.com/auxpi/bootstrap"
 )
 
@@ -51,7 +53,7 @@ func GetActiveStore() (stores []Store) {
 		Where("status=?", true).
 		Order("`rank` ASC").
 		Find(&stores).Error
-	if err != nil {
+	if err == nil && len(stores) > 0 {
 		setCacheStores("active", &stores)
 	}
 	modelsError(auxpi.ErrorToString(err))
@@ -161,7 +163,7 @@ func getCacheStores(key string, single bool) ([]Store, bool) {
 }
 
 func setCacheStores(key string, value *[]Store) bool {
-	err := bootstrap.Cache.Put("store_"+key, value, 3600)
+	err := bootstrap.Cache.Put("store_"+key, value, 3600*time.Second)
 	return modelsError(auxpi.ErrorToString(err))
 }
 
